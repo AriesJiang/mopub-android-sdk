@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 
 import com.mopub.mobileads.MoPubErrorCode;
 import com.mopub.mobileads.MoPubView;
+import com.mopub.mobileads.factories.MoPubViewFactory;
 
 import static com.mopub.mobileads.MoPubView.BannerAdListener;
 import static com.mopub.simpleadsdemo.Utils.hideSoftKeyboard;
@@ -24,6 +25,7 @@ import static com.mopub.simpleadsdemo.Utils.logToast;
 public abstract class AbstractBannerDetailFragment extends Fragment implements BannerAdListener {
     private MoPubView mMoPubView;
     private MoPubSampleAdUnit mMoPubSampleAdUnit;
+    private ViewGroup mRootView;
 
     public abstract int getWidth();
 
@@ -36,13 +38,17 @@ public abstract class AbstractBannerDetailFragment extends Fragment implements B
         final View view = inflater.inflate(R.layout.banner_detail_fragment, container, false);
         final DetailFragmentViewHolder views = DetailFragmentViewHolder.fromView(view);
 
+        mRootView = view.findViewById(R.id.rootBannerLy);
+
         mMoPubSampleAdUnit = MoPubSampleAdUnit.fromBundle(getArguments());
-        mMoPubView = (MoPubView) view.findViewById(R.id.banner_mopubview);
-        LinearLayout.LayoutParams layoutParams =
-                (LinearLayout.LayoutParams) mMoPubView.getLayoutParams();
-        layoutParams.width = getWidth();
-        layoutParams.height = getHeight();
-        mMoPubView.setLayoutParams(layoutParams);
+//        mMoPubView = (MoPubView) view.findViewById(R.id.banner_mopubview);
+        mMoPubView = MoPubViewFactory.create(this.getContext());
+
+//        LinearLayout.LayoutParams layoutParams =
+//                (LinearLayout.LayoutParams) mMoPubView.getLayoutParams();
+//        layoutParams.width = getWidth();
+//        layoutParams.height = getHeight();
+//        mMoPubView.setLayoutParams(layoutParams);
 
         hideSoftKeyboard(views.mKeywordsField);
 
@@ -88,10 +94,15 @@ public abstract class AbstractBannerDetailFragment extends Fragment implements B
     // BannerAdListener
     @Override
     public void onBannerLoaded(MoPubView banner) {
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getWidth(), getHeight());
+        mMoPubView.setLayoutParams(layoutParams);
+        mRootView.removeAllViews();
+        mRootView.addView(mMoPubView);
         logToast(getActivity(), getName() + " loaded.");
     }
 
     @Override
+
     public void onBannerFailed(MoPubView banner, MoPubErrorCode errorCode) {
         final String errorMessage = (errorCode != null) ? errorCode.toString() : "";
         logToast(getActivity(), getName() + " failed to load: " + errorMessage);

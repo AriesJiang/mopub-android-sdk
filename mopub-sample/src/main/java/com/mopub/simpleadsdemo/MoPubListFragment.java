@@ -117,6 +117,13 @@ public class MoPubListFragment extends ListFragment implements TrashCanClickList
 
         // If you have a large amount of data, this loading work should be done in the background.
         final List<MoPubSampleAdUnit> adUnits = mAdUnitDataSource.getAllAdUnits();
+
+        MoPubSampleAdUnit mopubNative = new MoPubSampleAdUnit.Builder("11a17b188668469fb0412708c3d16813", AdType.NATIVE_AD_VIEW)
+                .description("123")
+                .isUserDefined(true)
+                .id(1222)
+                .build();
+        adUnits.add(mopubNative);
         for (final MoPubSampleAdUnit adUnit : adUnits) {
             mAdapter.add(adUnit);
         }
